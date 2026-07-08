@@ -1322,9 +1322,16 @@
             const filaAtendentes = ["Lucas", "Hudson", "Lucas", "Tamara"];
             const atendenteAtual = String(clienteAtual?.atendente_responsavel || atendente || "").trim();
 
-            let indiceAtual = filaAtendentes.findIndex(function(nomeFila) {
-              return nomeFila.trim().toLowerCase() === atendenteAtual.toLowerCase();
-            });
+            let indiceAtual = tentativasAtuais;
+
+            if (
+              !filaAtendentes[indiceAtual] ||
+              filaAtendentes[indiceAtual].trim().toLowerCase() !== atendenteAtual.toLowerCase()
+            ) {
+              indiceAtual = filaAtendentes.findIndex(function(nomeFila) {
+                return nomeFila.trim().toLowerCase() === atendenteAtual.toLowerCase();
+              });
+            }
 
             if (indiceAtual === -1) {
               indiceAtual = filaAtendentes.findIndex(function(nomeFila) {

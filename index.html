@@ -81,6 +81,27 @@
       margin-top: 4px;
       color: #444;
     }
+
+    .aviso-tentativa {
+      display: inline-block;
+      margin-bottom: 4px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background-color: #eef4ff;
+      color: #1f3c88;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .aviso-tentativa.ultimo {
+      background-color: #fff4d6;
+      color: #92400e;
+    }
+
+    .nome-cliente {
+      display: block;
+    }
   </style>
 </head>
 
@@ -305,6 +326,38 @@
       return textoBase;
     }
 
+    function montarAvisoTentativa(item) {
+      const tentativas = Number(item.tentativas_sem_contato || 0);
+      const ehTratativa = item.eh_tratativa === true;
+      const ehRetorno = !!item.horario_retorno && !ehTratativa;
+
+      if (ehTratativa) {
+        return {
+          texto: tentativas >= 1 ? "Última tentativa de tratativa" : "1ª tentativa de tratativa",
+          ultimo: tentativas >= 1
+        };
+      }
+
+      if (ehRetorno) {
+        return {
+          texto: tentativas >= 1 ? "2ª tentativa de retorno" : "1ª tentativa de retorno",
+          ultimo: tentativas >= 1
+        };
+      }
+
+      if (tentativas >= 3) {
+        return {
+          texto: "4º contato - último contato",
+          ultimo: true
+        };
+      }
+
+      return {
+        texto: (tentativas + 1) + "º contato",
+        ultimo: false
+      };
+    }
+
     function carregarTabela(lista) {
       let tabela = document.getElementById("tabela");
       tabela.innerHTML = "";
@@ -324,11 +377,15 @@
         let textoRetorno = montarTextoRetorno(a);
         let classeRetorno = (a.horario_retorno || a.eh_tratativa) ? "retorno-amarelo" : "";
         let modo = a.eh_tratativa ? "tratativa" : "normal";
+        let avisoTentativa = montarAvisoTentativa(a);
 
         let linha = `
           <tr>
             <td>${a.codigo}</td>
-            <td>${a.nome}</td>
+            <td>
+              <span class="aviso-tentativa ${avisoTentativa.ultimo ? "ultimo" : ""}">${avisoTentativa.texto}</span>
+              <span class="nome-cliente">${a.nome}</span>
+            </td>
             <td>${a.bairro}</td>
             <td>${formatarDataBR(a.data)}</td>
             <td class="${classeRetorno}">${textoRetorno}</td>

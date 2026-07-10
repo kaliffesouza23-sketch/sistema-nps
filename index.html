@@ -16,6 +16,27 @@
       color: #1f3c88;
     }
 
+    .topo-atendente {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .saudacao-atendente {
+      margin: 0;
+      color: #1f3c88;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .frase-atendente {
+      margin-top: 8px;
+      color: #222;
+      font-size: 15px;
+    }
+
     .container {
       width: 95%;
       max-width: 1500px;
@@ -102,20 +123,134 @@
     .nome-cliente {
       display: block;
     }
+
+    .dashboard-atendente {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dashboard-bloco {
+      background: #f7f9fc;
+      border: 1px solid #e3e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .dashboard-titulo {
+      color: #1f3c88;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .dashboard-cards {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .dashboard-card {
+      background: #ffffff;
+      border: 1px solid #dbe4ea;
+      border-left: 4px solid #1f3c88;
+      border-radius: 7px;
+      padding: 7px 10px;
+      min-width: 112px;
+      box-sizing: border-box;
+    }
+
+    .dashboard-card.alerta {
+      border-left-color: #d97706;
+      background: #fffaf0;
+    }
+
+    .dashboard-cards-extra {
+      display: contents;
+    }
+
+    .dashboard-label {
+      display: block;
+      color: #555;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .dashboard-valor {
+      color: #1f3c88;
+      font-size: 21px;
+      font-weight: bold;
+      line-height: 1;
+    }
   </style>
 </head>
 
 <body>
 
   <div class="container">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap;">
+    <div class="topo-atendente">
       <div>
-        <h1 style="margin:0;">Lista de Atendimentos</h1>
-        <div class="info-usuario" id="infoUsuario"></div>
+        <h1 class="saudacao-atendente" id="saudacaoAtendente">Olá</h1>
+        <div class="frase-atendente" id="fraseAtendente">Tenha um ótimo dia!</div>
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <button onclick="logout()">Sair</button>
+      </div>
+    </div>
+
+    <div class="dashboard-atendente">
+      <div class="dashboard-bloco">
+        <div class="dashboard-titulo">Desempenho do mês</div>
+        <div class="dashboard-cards">
+          <div class="dashboard-card">
+            <span class="dashboard-label">Total do mês</span>
+            <span class="dashboard-valor" id="dashMes">0</span>
+          </div>
+          <div id="dashMesStatusOrdenados" class="dashboard-cards-extra"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-bloco">
+        <div class="dashboard-titulo">Desempenho do dia</div>
+        <div class="dashboard-cards">
+          <div class="dashboard-card">
+            <span class="dashboard-label">Total de hoje</span>
+            <span class="dashboard-valor" id="dashHoje">0</span>
+          </div>
+          <div id="dashHojeStatusOrdenados" class="dashboard-cards-extra"></div>
+        </div>
+      </div>
+
+      <div class="dashboard-bloco">
+        <div class="dashboard-titulo">Fila</div>
+        <div class="dashboard-cards">
+          <div class="dashboard-card">
+            <span class="dashboard-label">1º contato</span>
+            <span class="dashboard-valor" id="filaContato1">0</span>
+          </div>
+          <div class="dashboard-card">
+            <span class="dashboard-label">2º contato</span>
+            <span class="dashboard-valor" id="filaContato2">0</span>
+          </div>
+          <div class="dashboard-card">
+            <span class="dashboard-label">3º contato</span>
+            <span class="dashboard-valor" id="filaContato3">0</span>
+          </div>
+          <div class="dashboard-card alerta">
+            <span class="dashboard-label">Último contato</span>
+            <span class="dashboard-valor" id="filaUltimoContato">0</span>
+          </div>
+          <div class="dashboard-card">
+            <span class="dashboard-label">Retornos</span>
+            <span class="dashboard-valor" id="filaRetornos">0</span>
+          </div>
+          <div class="dashboard-card">
+            <span class="dashboard-label">Tratativas</span>
+            <span class="dashboard-valor" id="filaTratativas">0</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -152,8 +287,23 @@
       window.location.href = "login.html";
     }
 
-    document.getElementById("infoUsuario").innerText =
-      "Usuário logado: " + (usuarioLogado.nome || usuarioLogado.usuario || "Não informado");
+    document.getElementById("saudacaoAtendente").innerText =
+      "Olá " + (usuarioLogado.nome || usuarioLogado.usuario || "") + " 😄";
+
+    function obterFraseDoDia() {
+      const dia = new Date().getDay();
+
+      if (dia === 0) return "Bom fim de semana! 🌞";
+      if (dia === 1 || dia === 2) return "Tenha uma ótima semana! 🚀";
+      if (dia === 3) return "Metade da semana! Vamos com tudo! 🎯";
+      if (dia === 4) return "Falta pouco para o fim de semana. 💙";
+      if (dia === 5) return "Sextou! Vamos fechar bem a semana. Falta pouco! 🚀";
+      if (dia === 6) return "Tenha um ótimo fim de semana! 🎉";
+
+      return "Tenha um ótimo dia!";
+    }
+
+    document.getElementById("fraseAtendente").innerText = obterFraseDoDia();
 
     function normalizarTexto(texto) {
       return String(texto || "")
@@ -170,6 +320,145 @@
       if (texto.includes("venda")) return "Pós Venda";
       if (texto.includes("suporte")) return "Pós Suporte";
       return tipo || "";
+    }
+
+    function hojeISO() {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+      const dia = String(hoje.getDate()).padStart(2, "0");
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function inicioMesISO() {
+      const hoje = new Date();
+      const ano = hoje.getFullYear();
+      const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+      return `${ano}-${mes}-01`;
+    }
+
+    function atualizarTexto(id, valor) {
+      const elemento = document.getElementById(id);
+      if (elemento) elemento.innerText = valor;
+    }
+
+    function statusCampanha(status) {
+      const s = normalizarTexto(status);
+      return ["realizada", "nao_quis", "sem_contato"].includes(s);
+    }
+
+    function ehStatus(status, esperado) {
+      return normalizarTexto(status) === esperado;
+    }
+
+    function montarCardResultado(label, valor) {
+      return `
+        <div class="dashboard-card">
+          <span class="dashboard-label">${label}</span>
+          <span class="dashboard-valor">${valor}</span>
+        </div>
+      `;
+    }
+
+    function atualizarCardsResultado(containerId, contagens) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const cards = [
+        { label: "Realizadas", valor: contagens.realizadas },
+        { label: "Não quis realizar", valor: contagens.naoQuis },
+        { label: "Sem contato", valor: contagens.semContato }
+      ].sort(function(a, b) {
+        return b.valor - a.valor;
+      });
+
+      container.innerHTML = cards.map(function(card) {
+        return montarCardResultado(card.label, card.valor);
+      }).join("");
+    }
+
+    async function carregarDashboardAtendente() {
+      const nomeAtendente = usuarioLogado.nome || usuarioLogado.usuario || "";
+      const inicioMes = inicioMesISO();
+      const hoje = hojeISO();
+
+      const { data, error } = await supabaseClient
+        .from("respostas")
+        .select("atendente, status, data")
+        .gte("data", inicioMes)
+        .lte("data", hoje)
+        .order("id", { ascending: true });
+
+      if (error) {
+        console.error("Erro ao carregar dashboard do atendente:", error);
+        return;
+      }
+
+      const respostasAtendente = (data || []).filter(function(item) {
+        return normalizarTexto(item.atendente) === normalizarTexto(nomeAtendente);
+      });
+
+      const respostasCampanha = respostasAtendente.filter(function(item) {
+        return statusCampanha(item.status);
+      });
+
+      const respostasHoje = respostasAtendente.filter(function(item) {
+        return item.data === hoje;
+      });
+
+      const contagensMes = {
+        realizadas: respostasAtendente.filter(item => ehStatus(item.status, "realizada")).length,
+        naoQuis: respostasAtendente.filter(item => ehStatus(item.status, "nao_quis")).length,
+        semContato: respostasAtendente.filter(item => ehStatus(item.status, "sem_contato")).length
+      };
+
+      const contagensHoje = {
+        realizadas: respostasHoje.filter(item => ehStatus(item.status, "realizada")).length,
+        naoQuis: respostasHoje.filter(item => ehStatus(item.status, "nao_quis")).length,
+        semContato: respostasHoje.filter(item => ehStatus(item.status, "sem_contato")).length
+      };
+
+      atualizarTexto("dashHoje", respostasCampanha.filter(item => item.data === hoje).length);
+      atualizarTexto("dashMes", respostasCampanha.length);
+      atualizarCardsResultado("dashMesStatusOrdenados", contagensMes);
+      atualizarCardsResultado("dashHojeStatusOrdenados", contagensHoje);
+    }
+
+    function atualizarResumoFila(lista) {
+      const resumo = {
+        contato1: 0,
+        contato2: 0,
+        contato3: 0,
+        ultimoContato: 0,
+        retornos: 0,
+        tratativas: 0
+      };
+
+      (lista || []).forEach(function(item) {
+        const tentativas = Number(item.tentativas_sem_contato || 0);
+
+        if (item.eh_tratativa) {
+          resumo.tratativas += 1;
+          return;
+        }
+
+        if (item.horario_retorno) {
+          resumo.retornos += 1;
+          return;
+        }
+
+        if (tentativas <= 0) resumo.contato1 += 1;
+        else if (tentativas === 1) resumo.contato2 += 1;
+        else if (tentativas === 2) resumo.contato3 += 1;
+        else resumo.ultimoContato += 1;
+      });
+
+      atualizarTexto("filaContato1", resumo.contato1);
+      atualizarTexto("filaContato2", resumo.contato2);
+      atualizarTexto("filaContato3", resumo.contato3);
+      atualizarTexto("filaUltimoContato", resumo.ultimoContato);
+      atualizarTexto("filaRetornos", resumo.retornos);
+      atualizarTexto("filaTratativas", resumo.tratativas);
     }
 
     async function buscarInfoPendencia(nomesClientes) {
@@ -302,6 +591,7 @@
         ...novos.slice(0, 5)
       ];
 
+      atualizarResumoFila(atendimentos);
       carregarTabela(atendimentos);
     }
 
@@ -454,6 +744,7 @@
       window.location.href = "login.html";
     }
 
+    carregarDashboardAtendente();
     carregarClientes();
 
     function formatarDataBR(data) {

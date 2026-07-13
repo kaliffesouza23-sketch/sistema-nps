@@ -284,14 +284,10 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="app-common.js"></script>
 
   <script>
-    const SUPABASE_URL = "https://etfdhxdgczpkglgoggyt.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_AUguEJIlOy_l87hJeHsbNw_VdwPqRAl";
-
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    let usuarioLogado = obterUsuarioLogado();
     let editandoId = null;
 
     if (!usuarioLogado) {
@@ -303,14 +299,6 @@
       alert("Você não tem permissão para acessar esta página.");
       window.location.href = "relatorio.html";
       throw new Error("Acesso negado");
-    }
-
-    function normalizarUsuario(texto) {
-      return String(texto || "")
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
     }
 
     function mostrarMensagem(texto, tipo) {
@@ -462,7 +450,7 @@
             senha: senha,
             perfil: perfil
           };
-          localStorage.setItem("usuarioLogado", JSON.stringify(usuarioLogado));
+          salvarUsuarioLogado(usuarioLogado);
         }
 
         mostrarMensagem("Usuário atualizado com sucesso!", "sucesso");
@@ -550,11 +538,6 @@
       } else {
         window.location.href = "relatorio.html";
       }
-    }
-
-    function logout() {
-      localStorage.removeItem("usuarioLogado");
-      window.location.href = "login.html";
     }
 
     carregarTabelaUsuarios();

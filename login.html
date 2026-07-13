@@ -84,20 +84,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="app-common.js"></script>
 
     <script>
-        const SUPABASE_URL = "https://etfdhxdgczpkglgoggyt.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_AUguEJIlOy_l87hJeHsbNw_VdwPqRAl";
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        function normalizarUsuario(texto) {
-            return String(texto || "")
-                .trim()
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "");
-        }
-
         async function entrar() {
             const login = document.getElementById("usuario").value;
             const senha = document.getElementById("senha").value;
@@ -124,7 +113,7 @@
                 return;
             }
 
-            localStorage.setItem("usuarioLogado", JSON.stringify(data));
+            salvarUsuarioLogado(data);
 
             if (data.perfil === "atendente") {
                 window.location.href = "index.html";

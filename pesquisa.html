@@ -314,6 +314,7 @@
     const motivoTratativaOriginal = parametros.get("motivoTratativa") || "";
     const horarioRetornoOriginal = parametros.get("horarioRetorno") || "";
     const tipoRetornoOriginal = parametros.get("tipoRetorno") || "";
+    let enviandoPesquisa = false;
 
     document.getElementById("cliente").innerText = "Cliente: " + (nome || "Não informado");
     document.getElementById("tipo").innerText = "Tipo: " + (tipo || "Não informado");
@@ -734,7 +735,7 @@
             <input type="time" id="horarioRetorno">
           </div>
 
-          <button id="btnEnviarPesquisa" onclick="enviar()">Enviar</button>
+          <button id="btnEnviarPesquisa" onclick="enviar(this)">Enviar</button>
         `;
       } else {
         formulario.innerHTML = `
@@ -881,7 +882,7 @@
             <input type="time" id="horarioRetorno">
           </div>
 
-          <button id="btnEnviarPesquisa" onclick="enviar()">Enviar</button>
+          <button id="btnEnviarPesquisa" onclick="enviar(this)">Enviar</button>
         `;
       }
 
@@ -978,6 +979,11 @@
       if (botao) botao.disabled = true;
 
       try {
+        if (!clienteId) {
+          alert("Não foi possível identificar o cliente. Volte para a lista e abra o atendimento novamente.");
+          return;
+        }
+
         const atendente = document.getElementById("atendenteTratativa")?.value || "";
         const comentario = document.getElementById("comentarioTratativa")?.value || "";
         const statusTratativa = document.querySelector('input[name="statusTratativa"]:checked')?.value || null;
@@ -1122,7 +1128,21 @@
       }
     }
 
-    async function enviar() {
+    async function enviar(botao) {
+      if (enviandoPesquisa || (botao && botao.disabled)) return;
+
+      enviandoPesquisa = true;
+      if (botao) {
+        botao.disabled = true;
+        botao.innerText = "Enviando...";
+      }
+
+      try {
+      if (!clienteId) {
+        alert("Não foi possível identificar o cliente. Volte para a lista e abra o atendimento novamente.");
+        return;
+      }
+
       const atendente = document.getElementById("atendente")?.value || "";
       const tecnicoSelecionado = document.getElementById("tecnico")?.value || "";
       const pergunta1 = document.querySelector('input[name="pergunta1"]:checked')?.value || null;
@@ -1361,6 +1381,13 @@
 
       alert("Pesquisa salva com sucesso!");
       window.location.href = "index.html";
+      } finally {
+        enviandoPesquisa = false;
+        if (botao) {
+          botao.disabled = false;
+          botao.innerText = "Enviar";
+        }
+      }
     }
 
     function logout() {

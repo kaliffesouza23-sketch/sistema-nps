@@ -1,0 +1,449 @@
+.login-page {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #1f3c88, #4f6edc);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+.login-page .login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    width: 350px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+.login-page .login-box img {
+    width: 120px;
+    margin-bottom: 20px;
+}
+
+.login-page h2 {
+    margin-bottom: 20px;
+    color: #1f3c88;
+}
+
+.login-page input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.login-page button {
+    width: 100%;
+    padding: 12px;
+    background-color: #1f3c88;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login-page button:hover {
+    background-color: #16306d;
+}
+
+.login-page .erro {
+    color: red;
+    font-size: 13px;
+    margin-top: 10px;
+    min-height: 18px;
+}
+
+.atendente-page {
+    font-family: Arial;
+    background-color: #f4f6f9;
+    padding: 30px;
+    margin: 0;
+}
+
+.atendente-page h1 {
+    color: #1f3c88;
+}
+
+.atendente-page .topo-atendente {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.atendente-page .saudacao-atendente {
+    margin: 0;
+    color: #1f3c88;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.atendente-page .frase-atendente {
+    margin-top: 8px;
+    color: #222;
+    font-size: 15px;
+}
+
+.atendente-page .container {
+    width: 95%;
+    max-width: 1500px;
+    margin: 30px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.atendente-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.atendente-page th {
+    background-color: #1f3c88;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+.atendente-page td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.atendente-page button {
+    background-color: #1f3c88;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.atendente-page button:hover {
+    background-color: #16306d;
+}
+
+.atendente-page select {
+    padding: 6px;
+    margin-top: 10px;
+}
+
+.atendente-page .info-usuario {
+    font-size: 14px;
+    color: #555;
+    margin-top: 8px;
+}
+
+.atendente-page .retorno-amarelo {
+    background-color: #fff6bf;
+    font-weight: 600;
+}
+
+.atendente-page .texto-menor {
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+    margin-top: 4px;
+    color: #444;
+}
+
+.atendente-page .aviso-tentativa {
+    display: inline-block;
+    margin-bottom: 4px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background-color: #eef4ff;
+    color: #1f3c88;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.atendente-page .aviso-tentativa.ultimo {
+    background-color: #fff4d6;
+    color: #92400e;
+}
+
+.atendente-page .nome-cliente {
+    display: block;
+}
+
+.atendente-page .dashboard-atendente {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.atendente-page .dashboard-bloco {
+    background: #f7f9fc;
+    border: 1px solid #e3e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+.atendente-page .dashboard-titulo {
+    color: #1f3c88;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.atendente-page .dashboard-cards {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.atendente-page .dashboard-card {
+    background: #ffffff;
+    border: 1px solid #dbe4ea;
+    border-left: 4px solid #1f3c88;
+    border-radius: 7px;
+    padding: 7px 10px;
+    min-width: 112px;
+    box-sizing: border-box;
+}
+
+.atendente-page .dashboard-card.alerta {
+    border-left-color: #d97706;
+    background: #fffaf0;
+}
+
+.atendente-page .dashboard-cards-extra {
+    display: contents;
+}
+
+.atendente-page .dashboard-label {
+    display: block;
+    color: #555;
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.atendente-page .dashboard-valor {
+    color: #1f3c88;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.usuarios-page {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 30px;
+}
+
+.usuarios-page .container {
+    width: 95%;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.usuarios-page .topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.usuarios-page .titulo {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1f3c88;
+}
+
+.usuarios-page .acoes-topo {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.usuarios-page .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+}
+
+.usuarios-page .subtitulo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1f3c88;
+    margin-bottom: 20px;
+}
+
+.usuarios-page .grid-form {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.usuarios-page .campo label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #333;
+    font-size: 14px;
+}
+
+.usuarios-page .campo input,
+.usuarios-page .campo select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.usuarios-page .botoes-form {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.usuarios-page button {
+    background-color: #1f3c88;
+    color: white;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.usuarios-page button:hover {
+    background-color: #16306d;
+}
+
+.usuarios-page .btn-secundario {
+    background-color: #6c757d;
+}
+
+.usuarios-page .btn-secundario:hover {
+    background-color: #565e64;
+}
+
+.usuarios-page .btn-verde {
+    background-color: #00b050;
+}
+
+.usuarios-page .btn-verde:hover {
+    background-color: #009245;
+}
+
+.usuarios-page .btn-vermelho {
+    background-color: #dc3545;
+}
+
+.usuarios-page .btn-vermelho:hover {
+    background-color: #b02a37;
+}
+
+.usuarios-page .btn-amarelo {
+    background-color: #f4b400;
+    color: #111;
+}
+
+.usuarios-page .btn-amarelo:hover {
+    background-color: #d89d00;
+}
+
+.usuarios-page table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+}
+
+.usuarios-page th {
+    background-color: #1f3c88;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.usuarios-page td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.usuarios-page .acoes-tabela {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.usuarios-page .badge {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.usuarios-page .badge-admin {
+    background: #e8f0ff;
+    color: #1f3c88;
+}
+
+.usuarios-page .badge-gestor {
+    background: #e8fff2;
+    color: #15803d;
+}
+
+.usuarios-page .badge-atendente {
+    background: #fff7e6;
+    color: #b45309;
+}
+
+.usuarios-page .mensagem {
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+.usuarios-page .mensagem-sucesso {
+    color: #15803d;
+}
+
+.usuarios-page .mensagem-erro {
+    color: #b91c1c;
+}
+
+@media (max-width: 1000px) {
+    .usuarios-page .grid-form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .usuarios-page .grid-form {
+        grid-template-columns: 1fr;
+    }
+
+    .usuarios-page .titulo {
+        font-size: 26px;
+    }
+}

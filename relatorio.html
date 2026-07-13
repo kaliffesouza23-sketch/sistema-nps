@@ -62,6 +62,78 @@
       background: #aaa;
     }
 
+    .redistribuicao-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #1f3c88;
+    }
+
+    .redistribuicao-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .redistribuicao-titulo {
+      font-size: 18px;
+      font-weight: bold;
+      color: #1f3c88;
+    }
+
+    .redistribuicao-texto {
+      color: #555;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .redistribuicao-resultado {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .redistribuicao-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .redistribuicao-card {
+      background: #f7f9fc;
+      border: 1px solid #e3e8f0;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .redistribuicao-card strong {
+      display: block;
+      color: #1f3c88;
+      margin-bottom: 4px;
+    }
+
+    .redistribuicao-lista {
+      margin: 0;
+      padding-left: 18px;
+      color: #333;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .redistribuicao-aviso {
+      background: #fff7e6;
+      border: 1px solid #f5d08a;
+      color: #7c4a03;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
     .dashboard {
       background-color: #ffffff;
       border-radius: 14px;
@@ -438,6 +510,19 @@
       <button id="btnLimparFiltro" class="btn-cinza">Limpar</button>
       <button id="btnExportar" class="btn-verde">Exportar Excel</button>
     </div>
+
+    <section id="boxRedistribuicao" class="redistribuicao-box">
+      <div class="redistribuicao-topo">
+        <div>
+          <div class="redistribuicao-titulo">Redistribuição assistida da fila</div>
+          <div class="redistribuicao-texto">Gera uma prévia para equilibrar clientes pendentes entre os atendentes, sem alterar o Supabase.</div>
+        </div>
+
+        <button id="btnPreviaRedistribuicao">Ver prévia</button>
+      </div>
+
+      <div id="redistribuicaoResultado" class="redistribuicao-resultado"></div>
+    </section>
 
     <section class="dashboard">
       <div style="font-size:18px;font-weight:bold;color:#1f3c88;">
@@ -1480,6 +1565,266 @@
       link.click();
     }
 
+    function obterAtendentesRedistribuicao() {
+      return ["Hudson", "Lucas", "Tamara"];
+    }
+
+    function normalizarResponsavelFila(nome) {
+      let texto = normalizarTexto(nome);
+      let atendente = obterAtendentesRedistribuicao().find(function(item) {
+        return normalizarTexto(item) === texto;
+      });
+
+      return atendente || "";
+    }
+
+    async function obterClientesPendentesFila() {
+      let { data, error } = await supabaseClient
+        .from("clientes")
+        .select("id, codigo, nome, bairro, data, tipo, status_pesquisa, atendente_responsavel, tentativas_sem_contato")
+        .eq("status_pesquisa", "pendente")
+        .order("data", { ascending: true });
+
+      if (error) {
+        console.error("Erro ao buscar clientes pendentes:", error);
+        alert("Erro ao buscar clientes pendentes: " + error.message);
+        return [];
+      }
+
+      return data || [];
+    }
+
+    async function obterUltimasRespostasPorCliente(clientes) {
+      let nomes = [...new Set(clientes.map(function(cliente) {
+        return cliente.nome;
+      }).filter(Boolean))];
+
+      if (nomes.length === 0) return {};
+
+      let { data, error } = await supabaseClient
+        .from("respostas")
+        .select("id, cliente, status, horario_retorno, tipo_retorno, necessita_tratativa, motivo_tratativa")
+        .in("cliente", nomes)
+        .order("id", { ascending: false });
+
+      if (error) {
+        console.error("Erro ao buscar respostas dos clientes pendentes:", error);
+        alert("Erro ao validar retornos e tratativas: " + error.message);
+        return {};
+      }
+
+      let ultimas = {};
+
+      (data || []).forEach(function(resposta) {
+        let chave = normalizarTexto(resposta.cliente);
+        if (!chave || ultimas[chave]) return;
+        ultimas[chave] = resposta;
+      });
+
+      return ultimas;
+    }
+
+    function clienteTemRetornoOuTratativa(resposta) {
+      if (!resposta) return false;
+
+      let status = normalizarTexto(resposta.status);
+      let necessitaTratativa = normalizarTexto(resposta.necessita_tratativa);
+
+      return (
+        status === "retorno" ||
+        status === "tratativa retorno" ||
+        status === "tratativa sem contato" ||
+        status === "tratativa resolvida" ||
+        !!resposta.horario_retorno ||
+        !!resposta.tipo_retorno ||
+        necessitaTratativa === "sim" ||
+        !!resposta.motivo_tratativa
+      );
+    }
+
+    async function filtrarClientesPendentesNormais(clientes) {
+      let ultimasRespostas = await obterUltimasRespostasPorCliente(clientes);
+      let elegiveis = [];
+      let ignorados = [];
+
+      clientes.forEach(function(cliente) {
+        let ultimaResposta = ultimasRespostas[normalizarTexto(cliente.nome)];
+
+        if (clienteTemRetornoOuTratativa(ultimaResposta)) {
+          ignorados.push({
+            cliente: cliente,
+            motivo: "retorno/tratativa"
+          });
+          return;
+        }
+
+        elegiveis.push(cliente);
+      });
+
+      return {
+        elegiveis: elegiveis,
+        ignorados: ignorados
+      };
+    }
+
+    function contarFilaPorAtendente(clientes) {
+      let atendentes = obterAtendentesRedistribuicao();
+      let contagem = {};
+
+      atendentes.forEach(function(nome) {
+        contagem[nome] = {
+          total: 0,
+          clientes: []
+        };
+      });
+
+      clientes.forEach(function(cliente) {
+        let responsavel = normalizarResponsavelFila(cliente.atendente_responsavel);
+        if (!responsavel) return;
+
+        contagem[responsavel].total += 1;
+        contagem[responsavel].clientes.push(cliente);
+      });
+
+      return contagem;
+    }
+
+    function calcularPreviaRedistribuicao(clientes) {
+      let contagem = contarFilaPorAtendente(clientes);
+      let atendentes = obterAtendentesRedistribuicao();
+      let filas = {};
+
+      atendentes.forEach(function(nome) {
+        filas[nome] = [...contagem[nome].clientes];
+      });
+
+      let sugestoes = [];
+      let limiteSeguranca = 100;
+
+      while (limiteSeguranca > 0) {
+        limiteSeguranca -= 1;
+
+        let ordenados = atendentes
+          .map(function(nome) {
+            return { nome: nome, total: filas[nome].length };
+          })
+          .sort(function(a, b) {
+            return b.total - a.total;
+          });
+
+        let origem = ordenados[0];
+        let destino = ordenados[ordenados.length - 1];
+
+        if (!origem || !destino || origem.total - destino.total <= 1) break;
+
+        let cliente = filas[origem.nome].shift();
+        if (!cliente) break;
+
+        filas[destino.nome].push(cliente);
+        sugestoes.push({
+          cliente: cliente,
+          origem: origem.nome,
+          destino: destino.nome
+        });
+      }
+
+      return {
+        antes: contagem,
+        depois: filas,
+        sugestoes: sugestoes,
+        totalElegiveis: clientes.length,
+        totalIgnorados: 0
+      };
+    }
+
+    function adicionarResumoElegibilidade(resultado, totalPendentes) {
+      return {
+        ...resultado,
+        totalPendentes: totalPendentes,
+        totalIgnorados: totalPendentes - resultado.totalElegiveis
+      };
+    }
+
+    function montarCardFila(nome, totalAntes, totalDepois) {
+      return `
+        <div class="redistribuicao-card">
+          <strong>${nome}</strong>
+          Antes: ${totalAntes}<br>
+          Depois da prévia: ${totalDepois}
+        </div>
+      `;
+    }
+
+    function renderizarPreviaRedistribuicao(resultado) {
+      let box = document.getElementById("redistribuicaoResultado");
+      if (!box) return;
+
+      let atendentes = obterAtendentesRedistribuicao();
+      let cards = atendentes.map(function(nome) {
+        return montarCardFila(
+          nome,
+          resultado.antes[nome].total,
+          resultado.depois[nome].length
+        );
+      }).join("");
+
+      let lista = "";
+      let resumo = `
+        <div class="redistribuicao-aviso">
+          Pendentes encontrados: ${resultado.totalPendentes || 0} |
+          Pendentes normais elegíveis: ${resultado.totalElegiveis || 0} |
+          Ignorados por retorno/tratativa: ${resultado.totalIgnorados || 0}
+        </div>
+      `;
+
+      if (resultado.sugestoes.length === 0) {
+        lista = `<div class="redistribuicao-aviso">A fila já está equilibrada. Nenhum movimento sugerido.</div>`;
+      } else {
+        lista = `
+          <ol class="redistribuicao-lista">
+            ${resultado.sugestoes.map(function(item) {
+              let cliente = item.cliente;
+              return `<li>${cliente.codigo || "-"} - ${cliente.nome || "Cliente sem nome"}: ${item.origem} → ${item.destino}</li>`;
+            }).join("")}
+          </ol>
+
+          <div class="redistribuicao-aviso">
+            Esta é apenas uma prévia. Nenhum cliente foi alterado no Supabase.
+          </div>
+        `;
+      }
+
+      box.innerHTML = `
+        ${resumo}
+        <div class="redistribuicao-grid">${cards}</div>
+        ${lista}
+      `;
+      box.style.display = "block";
+    }
+
+    async function gerarPreviaRedistribuicao() {
+      let botao = document.getElementById("btnPreviaRedistribuicao");
+      if (botao) {
+        botao.disabled = true;
+        botao.innerText = "Calculando...";
+      }
+
+      try {
+        let clientes = await obterClientesPendentesFila();
+        let filtro = await filtrarClientesPendentesNormais(clientes);
+        let resultado = adicionarResumoElegibilidade(
+          calcularPreviaRedistribuicao(filtro.elegiveis),
+          clientes.length
+        );
+        renderizarPreviaRedistribuicao(resultado);
+      } finally {
+        if (botao) {
+          botao.disabled = false;
+          botao.innerText = "Ver prévia";
+        }
+      }
+    }
+
     async function carregarDashboard() {
       let secoes = document.querySelectorAll(".dashboard");
       if (secoes.length < 4) return;
@@ -1529,6 +1874,9 @@
       if (usuarioLogado.perfil !== "admin") {
         let btn = document.getElementById("btnUsuarios");
         if (btn) btn.style.display = "none";
+
+        let boxRedistribuicao = document.getElementById("boxRedistribuicao");
+        if (boxRedistribuicao) boxRedistribuicao.style.display = "none";
       }
 
       if (usuarioLogado.perfil === "atendente") {
@@ -1551,6 +1899,7 @@
       document.getElementById("btnFiltrar").addEventListener("click", aplicarFiltro);
       document.getElementById("btnLimparFiltro").addEventListener("click", limparFiltro);
       document.getElementById("btnExportar").addEventListener("click", exportarExcel);
+      document.getElementById("btnPreviaRedistribuicao").addEventListener("click", gerarPreviaRedistribuicao);
 
       try {
         await carregarDashboard();

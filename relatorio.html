@@ -1404,9 +1404,14 @@
     }
 
     function limparCampoCSV(valor) {
-      return String(valor || "")
-        .replace(/;/g, ",")
-        .replace(/\r?\n|\r/g, " ");
+      return String(valor ?? "")
+        .replace(/\r?\n|\r/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function montarCampoCSV(valor) {
+      return '"' + limparCampoCSV(valor).replace(/"/g, '""') + '"';
     }
 
     async function exportarExcel() {
@@ -1417,28 +1422,61 @@
         return;
       }
 
-      let csv = "Cliente;Tipo;Atendente;Tecnico;Pergunta1;Pergunta2;Pergunta3;Status;Data;Comentario\n";
+      let cabecalhos = [
+        "ID",
+        "Criado em",
+        "Cliente",
+        "Tipo",
+        "Tecnico",
+        "Atendente",
+        "Pergunta1",
+        "Pergunta2",
+        "Pergunta3",
+        "Comentario",
+        "Status",
+        "Data",
+        "Dados corretos",
+        "Canais",
+        "Problema resolvido",
+        "Indicacao",
+        "Horario retorno",
+        "Tipo retorno",
+        "Necessita tratativa",
+        "Motivo tratativa"
+      ];
+
+      let csv = "\uFEFFsep=;\n" + cabecalhos.map(montarCampoCSV).join(";") + "\n";
 
       dados.forEach(function(item) {
         csv += [
+          item.id,
+          item.created_at,
           limparCampoCSV(item.cliente),
           limparCampoCSV(item.tipo),
-          limparCampoCSV(item.atendente),
           limparCampoCSV(item.tecnico),
+          limparCampoCSV(item.atendente),
           limparCampoCSV(item.pergunta1),
           limparCampoCSV(item.pergunta2),
           limparCampoCSV(item.pergunta3),
+          limparCampoCSV(item.comentario),
           limparCampoCSV(item.status),
           limparCampoCSV(item.data),
-          limparCampoCSV(item.comentario)
-        ].join(";") + "\n";
+          limparCampoCSV(item.dadosCorretos),
+          limparCampoCSV(item.canais),
+          limparCampoCSV(item.problemaResolvido),
+          limparCampoCSV(item.indicacao),
+          limparCampoCSV(item.horario_retorno),
+          limparCampoCSV(item.tipo_retorno),
+          limparCampoCSV(item.necessita_tratativa),
+          limparCampoCSV(item.motivo_tratativa)
+        ].map(montarCampoCSV).join(";") + "\n";
       });
 
       let blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       let link = document.createElement("a");
 
       link.href = URL.createObjectURL(blob);
-      link.download = "relatorio.csv";
+      link.download = "relatorio_respostas_limpo.csv";
       link.click();
     }
 

@@ -338,6 +338,17 @@
       return (modo === "tratativa" || !!horarioRetornoOriginal) ? 2 : 4;
     }
 
+    function definirProximoResponsavelSemContato(atendenteAtual) {
+      const atendente = normalizarTexto(atendenteAtual);
+
+      if (atendente === "tamara") return "Lucas";
+      if (atendente === "lucas") return "Tamara";
+      if (atendente === "hudson") return "Gabriel";
+      if (atendente === "gabriel") return "Hudson";
+
+      return "Tamara";
+    }
+
     function definirResponsavelTratativa(atendentePesquisa, horarioRetorno) {
       const [horaTexto, minutoTexto] = String(horarioRetorno || "").split(":");
       const hora = Number(horaTexto || 0);
@@ -1339,28 +1350,8 @@
             dadosAtualizacaoCliente.status_pesquisa = "pendente";
             dadosAtualizacaoCliente.atendente_responsavel = novoResponsavel;
           } else {
-            const filaAtendentes = ["Lucas", "Hudson", "Lucas", "Tamara"];
             const atendenteAtual = String(clienteAtual?.atendente_responsavel || atendente || "").trim();
-
-            let indiceAtual = tentativasAtuais;
-
-            if (
-              !filaAtendentes[indiceAtual] ||
-              filaAtendentes[indiceAtual].trim().toLowerCase() !== atendenteAtual.toLowerCase()
-            ) {
-              indiceAtual = filaAtendentes.findIndex(function(nomeFila) {
-                return nomeFila.trim().toLowerCase() === atendenteAtual.toLowerCase();
-              });
-            }
-
-            if (indiceAtual === -1) {
-              indiceAtual = filaAtendentes.findIndex(function(nomeFila) {
-                return nomeFila.trim().toLowerCase() === String(atendente).trim().toLowerCase();
-              });
-            }
-
-            const proximoIndice = indiceAtual === -1 ? 0 : (indiceAtual + 1) % filaAtendentes.length;
-            const proximoAtendente = filaAtendentes[proximoIndice];
+            const proximoAtendente = definirProximoResponsavelSemContato(atendenteAtual || atendente);
 
             dadosAtualizacaoCliente.status_pesquisa = "pendente";
             dadosAtualizacaoCliente.atendente_responsavel = proximoAtendente;
